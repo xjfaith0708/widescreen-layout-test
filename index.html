@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>宽屏布局测试</title>
+<style>
+:root { color-scheme: light; font-family: "PingFang SC", "Microsoft YaHei", sans-serif; color: #18243a; background: #f1f4f8; }
+* { box-sizing: border-box; }
+body { margin: 0; padding-bottom: 85px; }
+.shell { margin-inline: 20px; }
+header { background: #fff; color: #18243a; border-bottom: 1px solid #dce3ed; }
+.bar { display: flex; align-items: center; gap: 11px; height: 87px; }
+.settings { position: relative; flex-shrink: 0; margin-left: auto; font-size: 13px; font-weight: 500; letter-spacing: normal; }
+.settings summary { cursor: pointer; list-style: none; padding: 8px 11px; border: 1px solid #586783; border-radius: 7px; }
+.settings summary::-webkit-details-marker { display: none; }
+.settings summary:focus-visible { outline: 2px solid #a8bcff; outline-offset: 3px; }
+.settings fieldset { position: absolute; z-index: 2; inset: calc(100% + 8px) 0 auto auto; min-width: 112px; margin: 0; padding: 8px; border: 1px solid #dce3ed; border-radius: 9px; background: #fff; color: #18243a; box-shadow: 0 4px 16px #14213824; }
+.settings label { display: flex; align-items: center; gap: 6px; padding: 6px; cursor: pointer; white-space: nowrap; }
+main { padding-block: clamp(16px, 2.5vw, 28px) clamp(22px, 4vw, 48px); }
+h1 { margin: 0; color: #fb6699; font-size: clamp(20px, 3vw, 30px); letter-spacing: -.04em; }
+.feed { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+@media (min-width: 600px) { .feed[data-layout="1"] { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (width > 840px) { .feed[data-layout="1"] { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 870px) { .feed[data-layout="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (width > 1670px) { .feed[data-layout="3"] { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 1100px) { .feed[data-layout="4"] { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (width > 1600px) { .feed[data-layout="4"] { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (width > 900px) { .feed[data-layout="5"] { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (width > 1350px) { .feed[data-layout="5"] { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.card { min-width: 0; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px #1421380c; }
+.cover { position: relative; aspect-ratio: 4 / 3; background: #354563; }
+.cover img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.stats { position: absolute; inset: auto 0 0; display: flex; align-items: center; gap: clamp(4px, 1vw, 12px); padding: 24px clamp(5px, 1vw, 12px) 8px; background: linear-gradient(transparent, #071225e8); color: white; font: 400 clamp(10px, 1.35vw, 13px)/1.2 system-ui, sans-serif; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.stats span { display: inline-flex; align-items: center; gap: 3px; }
+.stats time { margin-left: auto; }
+svg { width: 1em; height: 1em; flex: none; }
+.body { padding: clamp(9px, 1.3vw, 15px); }
+h2 { margin: 0; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; height: 2.9em; font-size: clamp(13px, 1.65vw, 17px); line-height: 1.45; overflow-wrap: anywhere; }
+.author { display: flex; align-items: center; gap: 6px; margin: 8px 0 0; color: #999; font-size: 12px; }
+.up-icon { display: inline-grid; place-items: center; flex: none; width: 21px; height: 16px; border: 1px solid currentColor; border-radius: 4px; font: 400 10px/1 system-ui, sans-serif; }
+.bottom-bar { position: fixed; z-index: 1; inset: auto 0 0; height: 85px; background: #fff; border-top: 1px solid #dce3ed; }
+.bottom-bar .shell { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); align-items: center; width: min(calc(100% - 40px), 660px); height: 100%; margin-inline: auto; }
+.tab { display: grid; justify-items: center; gap: 5px; color: #757575; font-size: 11px; line-height: 1.2; }
+.tab[aria-current="page"] { color: #fb6699; }
+.tab svg { width: 24px; height: 24px; }
+.publish { display: grid; place-items: center; justify-self: center; width: 46px; height: 46px; border-radius: 12px; color: white; background: linear-gradient(145deg, #ff91b6, #f4508b); }
+.publish svg { width: 26px; height: 26px; }
+</style>
+</head>
+<body>
+<header><div class="shell bar"><h1>宽屏布局测试</h1>
+<details class="settings">
+<summary>设置 · <span id="layout-name">线上规则</span></summary>
+<fieldset aria-label="响应式布局">
+<label><input type="radio" name="layout" value="1" checked><span>线上规则</span></label>
+<label><input type="radio" name="layout" value="3"><span>YouTube 布局</span></label>
+<label><input type="radio" name="layout" value="4"><span>竖向覆盖2列版</span></label>
+<label><input type="radio" name="layout" value="5"><span>900 / 1350 布局</span></label>
+</fieldset>
+</details>
+</div>
+</header>
+<main class="shell">
+<section class="feed" data-layout="1" aria-label="视频列表"></section>
+</main>
+<nav class="bottom-bar" aria-label="底部导航">
+<div class="shell">
+<span class="tab" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><span>首页</span></span>
+<span class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16v12H9l-5 3z"/><path d="M8 10h8m-8 4h5"/></svg><span>动态</span></span>
+<span class="publish" role="img" aria-label="发布"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span>
+<span class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h16l1 13H3zM8 9V7a4 4 0 0 1 8 0v2"/></svg><span>会员购</span></span>
+<span class="tab"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg><span>我的</span></span>
+</div>
+</nav>
+<script>
+const videos = [
+  ["手机游戏", "「2027明日方舟：终末地终末回响专场演出-镌宇留声」先导预告公开", "明日方舟终末地", 587763, 937, "02:03", "covers/BV1GF17zKEiP.jpg"],
+  ["单机游戏", "《白银之城》世界观PV | 童话的起笔", "白银之城", 694392, 566, "11:51", "covers/BV1uT17zhEJX.jpg"],
+  ["手机游戏", "《蓝色星原：旅谣》公测版本PV | 星跃始动", "蓝色星原旅谣", 5386957, 704, "04:36", "covers/BV1UByzzRE4K.jpg"],
+  ["国产动画", "【独家】《罗小黑战记》第45话 美好的暑假如此短暂【10月国创】", "哔哩哔哩国创", 1001792, 44467, "11:41", "covers/BV1Em1jz5EpX.jpg"],
+  ["GMV", "【三角洲全角色/与天齐】⚡我本是天才少年😭👊🏻⚡", "萌宠教主", 292659, 165, "02:13", "covers/BV15wymzpE6T.jpg"],
+  ["手机游戏", "《明日方舟》SideStory「星星不愿入睡」活动宣传PV", "明日方舟", 1061429, 5336, "06:04", "covers/BV19k1Jz5Ea8.jpg"],
+  ["手机游戏", "《绝区零》挽昼动画短片 | 最后的旅途", "绝区零", 438515, 7606, "17:58", "covers/BV1or1HzXEi1.jpg"],
+  ["单机游戏", "R星：我们拥有最真实的物理引擎！【GTAVI沙雕时刻第一期】", "游戏星GameStar", 456862, 425, "06:51", "covers/BV17Cy6z3Ero.jpg"],
+  ["美食记录", "宠老头早午餐vlog有点高能量了", "bili笑姐爱笑", 795742, 453, "07:02", "covers/BV1SRyfz1E5Q.jpg"],
+  ["国产电影", "【欢迎来龙餐馆】起锅开灶，好好吃饭", "哔哩哔哩电影", 1040376, 5129, "140:04", "covers/BV14iy2zgE4s.jpg"],
+  ["日常", "大小姐驾到《千问GO》！", "千问APP", 737100, 1429, "03:09", "covers/BV1A5yzzVEs7.jpg"],
+  ["穿搭", "顺直大改造S2EP2——顺直男和通讯录的恩怨情仇", "antoxic", 404198, 856, "14:02", "covers/BV1EEyUzhEbH.jpg"],
+  ["综合", "什么叫投敌？那特么叫回家了", "海苔仙贝O", 548636, 235, "01:47", "covers/BV1YtyUzWEjP.jpg"],
+  ["野生动物", "遭遇超大黑眉锦蛇 深秋的浙江到底还有没有蛇？", "ZGL蛇语者", 440726, 549, "11:02", "covers/BV1mfymzVEC4.jpg"],
+  ["手工", "看懂前：啊？ 看懂后：啊啊啊！！！", "GM的秘密基地", 1779616, 266, "04:58", "covers/BV1J1ykzmEub.jpg"],
+  ["单机游戏", "我把Steam复刻搬进了B站游玩Toy【点击即玩】ToyToy【B站AI创造公开赛】", "MARK__33", 601680, 154, "01:27", "covers/BV119yCzcEBd.jpg"],
+  ["出行", "吓哭了！华山长空栈道是人爬的？和有山挑战天下第一奇险", "超Carry的柴西", 1042273, 9620, "28:50", "covers/BV1dj1EzVE4L.jpg"],
+  ["科学科普", "【毕导】最对味的一集！如何放出无声的屁？响屁不臭臭屁不响是真的吗？", "毕导", 208564, 3393, "12:34", "covers/BV1Dd1HzVENm.jpg"],
+  ["搞笑", "长得帅就要被网爆么?", "逗比的雀巢", 1727789, 3386, "04:19", "covers/BV11AyUz6E6h.jpg"],
+  ["日常", "何 以 当 归 2", "食贫道", 263770, 6163, "119:35", "covers/BV1uQ1JzuERH.jpg"]
+];
+
+const play = '<svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M4 2.5 13 8l-9 5.5z"/></svg>';
+const comments = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.25" aria-hidden="true"><rect x="1.5" y="3" width="13" height="10" rx="2"/><path d="M4 6.5h8M4 9.5h5"/></svg>';
+const feed = document.querySelector('.feed');
+const settings = document.querySelector('.settings');
+const layoutName = document.querySelector('#layout-name');
+function closeSettings() {
+  settings.open = false;
+  settings.querySelector('summary').focus();
+}
+
+settings.addEventListener('change', event => {
+  feed.dataset.layout = event.target.value;
+  layoutName.textContent = event.target.closest('label').querySelector('span').textContent;
+  closeSettings();
+});
+
+for (const option of settings.querySelectorAll('input[name="layout"]')) {
+  option.addEventListener('click', () => {
+    if (feed.dataset.layout === option.value) closeSettings();
+  });
+}
+
+function escapeText(value) {
+  return value.replace(/[&<>]/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[character]);
+}
+
+function formatCount(count) {
+  return count >= 10000 ? (count / 10000).toFixed(1) + '万' : count.toLocaleString('zh-CN');
+}
+
+function render() {
+  feed.innerHTML = videos.map(([, title, author, views, count, duration, cover]) => {
+    const [minutes, seconds] = duration.split(':');
+    return `<article class="card">
+      <div class="cover">
+        <img src="${cover}" width="720" height="540" alt="">
+        <div class="stats">
+          <span aria-label="播放量 ${views}">${play}${formatCount(views)}</span>
+          <span aria-label="弹幕数 ${count}">${comments}${formatCount(count)}</span>
+          <time datetime="PT${Number(minutes)}M${Number(seconds)}S" aria-label="时长 ${minutes} 分 ${Number(seconds)} 秒">${duration}</time>
+        </div>
+      </div>
+      <div class="body"><h2>${escapeText(title)}</h2><p class="author"><span class="up-icon" aria-hidden="true">UP</span>${escapeText(author)}</p></div>
+    </article>`;
+  }).join('');
+}
+
+render();
+</script>
+</body>
+</html>
